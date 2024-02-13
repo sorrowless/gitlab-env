@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gitlab-env"
-version = "0.1.0"
+version = "0.0.2"
 description = "Tool to get/set variables for given Gitlab project"
 authors = ["Eugene Aryapov <e.aryapov@oom.ag>", "Stan Bogatkin <s@sbog.ru>"]
 readme = "README.md"
