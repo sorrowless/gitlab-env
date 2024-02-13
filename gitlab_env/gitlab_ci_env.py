@@ -12,6 +12,22 @@ parser.add_argument('-l', '--list', help='List environment scopes.', action='sto
 # parser.add_argument('-j', '--json', help='Gen JSON varfile.', action='store_true')
 
 args = parser.parse_args()
+repo = Repo(os.getcwd())
+protocol, domain, path = re.split('@|:', repo.remote().url.split('.git')[0])
+url = 'https://' + domain
+
+'''
+Create Gitlab instanse.
+"keep_base_url=True" needs to resolve warning:
+"UserWarning: The base URL in the server response differs from the user-provided base URL (https://gitlab.example.com -> http://gitlab.example.com)."
+'''
+gl = gitlab.Gitlab(url, private_token=os.environ['GITLAB_TOKEN'],  keep_base_url=True)
+
+project = gl.projects.get(path, lazy=True)                          # Create project's object
+project_variables = project.variables.list(get_all=True)            # Get variables
+
+vars_dict = {}
+parse_dict = {}
 
 
 def gen_vars_dict():
@@ -127,22 +143,6 @@ def push_vars(push_list):
             print('Deleted: %s' % i)
 
 def main():
-  repo = Repo(os.getcwd())
-  protocol, domain, path = re.split('@|:', repo.remote().url.split('.git')[0])
-  url = 'https://' + domain
-
-  '''
-  Create Gitlab instanse.
-  "keep_base_url=True" needs to resolve warning:
-  "UserWarning: The base URL in the server response differs from the user-provided base URL (https://gitlab.example.com -> http://gitlab.example.com)."
-  '''
-  gl = gitlab.Gitlab(url, private_token=os.environ['GITLAB_TOKEN'],  keep_base_url=True)
-
-  project = gl.projects.get(path, lazy=True)                          # Create project's object
-  project_variables = project.variables.list(get_all=True)            # Get variables
-
-  vars_dict = {}
-  parse_dict = {}
 
   gen_vars_dict()
 
